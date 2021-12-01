@@ -8,7 +8,7 @@ public class DbConfig {
 
     private Connection connection;
 
-    private final String dbUrl = "jdbc:mysql://database-1.c6iikvtgalu6.ap-south-1.rds.amazonaws.com:3306/demodb";
+    private final String dbUrl = "jdbc:mysql://database-1.c4l7oml7jvpf.ap-south-1.rds.amazonaws.com:3306/mac_dev";
     private final String userName = "admin";
     private final String password = "12345678";
 

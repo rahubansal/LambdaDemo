@@ -10,14 +10,15 @@ import com.google.gson.JsonObject;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 // Handler value: example.Handler
-public class Handler implements RequestHandler<Object, String>{
+public class Handler implements RequestHandler<Object, List<Integer>>{
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     @Override
-    public String handleRequest(Object event, Context context)
+    public List<Integer> handleRequest(Object event, Context context)
     {
         LambdaLogger logger = context.getLogger();
 
@@ -29,12 +30,12 @@ public class Handler implements RequestHandler<Object, String>{
 //        logger.log("EVENT - gson.toJson: " + gson.toJson(event));
 //        logger.log("EVENT" + event);
 //        logger.log("EVENT tostring" + event.toString());
-
+        List<Integer> primaryKeys = new ArrayList<>();
         try {
             DbConfig db = new DbConfig();
             Connection conn = db.getConnection();
             int assignmentId = updateMAC_ASSIGNMENT(conn, frontendResponse.getAssignmentName());
-            ExecuteQueries(conn, assignmentId, frontendResponse);
+            primaryKeys = ExecuteQueries(conn, assignmentId, frontendResponse);
             conn.close();
 
         } catch (SQLException e) {
@@ -44,7 +45,7 @@ public class Handler implements RequestHandler<Object, String>{
             e.printStackTrace();
         }
 
-        return "done";
+        return primaryKeys;
 
 
     }
@@ -61,7 +62,7 @@ public class Handler implements RequestHandler<Object, String>{
     }
 
 
-    public void ExecuteQueries(Connection conn, int assignmentId, FrontendResponse frontendResponse) throws SQLException {
+    public List<Integer> ExecuteQueries(Connection conn, int assignmentId, FrontendResponse frontendResponse) throws SQLException {
 
         String SQL2 = "INSERT INTO MAC_ASSIGNMENT_DETAIL (ASSIGNMENT_ID, ASSIGNMENT_NAME," +
                 " ASSIGNMENT_START_DATE, ASSIGNMENT_END_DATE, ACCOUNT_NUMBER, ADMIN_EMAIL, " +
@@ -69,7 +70,7 @@ public class Handler implements RequestHandler<Object, String>{
                 " CUSTOM_EQUIPMENT_NAME, CONTRACT_START_DATE, CONTRACT_END_DATE)" +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        PreparedStatement pstmt2 = conn.prepareStatement(SQL2);
+        PreparedStatement pstmt2 = conn.prepareStatement(SQL2,Statement.RETURN_GENERATED_KEYS);
 
         conn.setAutoCommit(false);
 
@@ -92,7 +93,17 @@ public class Handler implements RequestHandler<Object, String>{
                 pstmt2.addBatch();
             }
         }
-        int[] count = pstmt2.executeBatch();
+        pstmt2.executeBatch();
+        ResultSet res = pstmt2.getGeneratedKeys();
         conn.commit();
+        List<Integer> primaryKeys = new ArrayList<>();
+//        primaryKeys =  (int[]) res.getArray(1).getArray();
+        while(res.next()){
+            primaryKeys.add(res.getInt(1));
+        }
+//        Arrays.stream(primaryKeys).forEach(value -> System.out.println(value));
+        primaryKeys.forEach(integer -> System.out.println(integer));
+        return primaryKeys;
+
     }
 }

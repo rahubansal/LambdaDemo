@@ -1,4 +1,7 @@
 Models\Equipment.class
+Models\DigitalKeyApiResponse.class
+Lambda2Handler.class
 Handler.class
+Models\DigitalKeyApiRequest.class
 Config\DbConfig.class
 Models\FrontendResponse.class
