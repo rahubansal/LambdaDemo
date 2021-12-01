@@ -1,0 +1,4 @@
+Models\Equipment.class
+Handler.class
+Config\DbConfig.class
+Models\FrontendResponse.class
