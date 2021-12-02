@@ -77,8 +77,8 @@ public class Handler implements RequestHandler<Object, List<Integer>>{
 
         pstmt2.setInt(1, assignmentId);
         pstmt2.setString(2,frontendResponse.getAssignmentName());
-        pstmt2.setString(3,frontendResponse.getAssignmentStartDate());
-        pstmt2.setString(4,frontendResponse.getAssignmentEndDate());
+        pstmt2.setTimestamp(3, new java.sql.Timestamp(frontendResponse.getAssignmentStartDate().getTime()));
+        pstmt2.setTimestamp(4, new java.sql.Timestamp(frontendResponse.getAssignmentEndDate().getTime()));
         pstmt2.setString(5,frontendResponse.getAccountNumber());
         pstmt2.setString(6,frontendResponse.getAdminEmail());
 
@@ -88,8 +88,8 @@ public class Handler implements RequestHandler<Object, List<Integer>>{
                 pstmt2.setString(8,eq.getIcNumber());
                 pstmt2.setString(9,eq.getHercEquipmentName());
                 pstmt2.setString(10,eq.getHercCustomName());
-                pstmt2.setString(11,eq.getRmStartDate());
-                pstmt2.setString(12,eq.getRmEndDate());
+                pstmt2.setTimestamp(11, new java.sql.Timestamp(eq.getRmStartDate().getTime()));
+                pstmt2.setTimestamp(12, new java.sql.Timestamp(eq.getRmEndDate().getTime()));
                 pstmt2.addBatch();
             }
         }
